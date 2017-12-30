@@ -5,12 +5,17 @@ import (
 	"log"
 	"os"
 
+	"github.com/iwat/etherezor/internal/etherscan"
+
 	"github.com/ethereum/go-ethereum/accounts"
 	"github.com/ethereum/go-ethereum/accounts/usbwallet"
 	"github.com/howeyc/gopass"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	_ = godotenv.Load(".env", ".env.local")
+
 	hub, err := usbwallet.NewTrezorHub()
 	if err != nil {
 		log.Fatalln("newhub:", err)
@@ -37,6 +42,13 @@ func main() {
 					log.Println("derive:", err)
 				} else {
 					log.Println("derive:", a.Address.Hex())
+
+					eth, err := etherscan.BalanceOf(a.Address.Hex())
+					if err != nil {
+						log.Println("balance:", err)
+					} else {
+						log.Println("balance:", fromWei(eth, "ether"), "ETH")
+					}
 				}
 
 				if err := e.Wallet.Close(); err != nil {
