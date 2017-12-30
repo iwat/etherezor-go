@@ -49,6 +49,15 @@ func main() {
 					} else {
 						log.Println("balance:", fromWei(eth, "ether"), "ETH")
 					}
+
+					for t, addr := range tokens {
+						eth, err := etherscan.TokenBalanceOf(addr, a.Address.Hex())
+						if err != nil {
+							log.Println("balance:", err)
+						} else {
+							log.Println("balance:", fromWei(eth, "ether"), t)
+						}
+					}
 				}
 
 				if err := e.Wallet.Close(); err != nil {
